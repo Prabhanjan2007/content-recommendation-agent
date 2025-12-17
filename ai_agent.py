@@ -2,19 +2,19 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import requests, os
 from typing import List
-from dotenv import load_dotenv
 from langchain_core.prompts import PromptTemplate
 from langchain_openai import ChatOpenAI 
+import streamlit as st
 
-load_dotenv()
+
 
 # app = FastAPI()
-SERPER_API_KEY=os.getenv("SERPER_API_KEY")
 
-DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY")
-DEEPSEEK_MODEL_NAME = os.getenv("DEEPSEEK_MODEL_NAME", "openai/gpt-oss-120b:free")
-MODEL_BASE_URL = os.getenv("MODEL_BASE_URL", "https://openrouter.ai/api/v1")
 
+SERPER_API_KEY = st.secrets["SERPER_API_KEY"]
+DEEPSEEK_API_KEY = st.secrets["DEEPSEEK_API_KEY"]
+DEEPSEEK_MODEL_NAME = st.secrets["DEEPSEEK_MODEL_NAME"]
+MODEL_BASE_URL = st.secrets["MODEL_BASE_URL"]
 
 # --- Models ---
 class TopicRequest(BaseModel):
@@ -24,7 +24,11 @@ class TopicRequest(BaseModel):
 llm = ChatOpenAI(
     api_key=DEEPSEEK_API_KEY,
     model=DEEPSEEK_MODEL_NAME,
-    base_url=MODEL_BASE_URL
+    base_url=MODEL_BASE_URL,
+    default_headers={
+        "HTTP-Referer": "https://streamlit.io",
+        "X-Title": "Content Research Agent"
+    }
 )
 
 
@@ -104,3 +108,5 @@ def search_topic(topic):
     ranked = summarize_and_rank(results, topic)
 
     return {"topic": topic, "results": ranked}
+
+
