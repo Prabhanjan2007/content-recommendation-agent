@@ -8,11 +8,11 @@ from langchain_openai import ChatOpenAI
 
 load_dotenv()
 
-app = FastAPI()
+# app = FastAPI()
 SERPER_API_KEY=os.getenv("SERPER_API_KEY")
 
 DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY")
-DEEPSEEK_MODEL_NAME = os.getenv("DEEPSEEK_MODEL_NAME", "deepseek/deepseek-chat-v3.1:free")
+DEEPSEEK_MODEL_NAME = os.getenv("DEEPSEEK_MODEL_NAME", "openai/gpt-oss-120b:free")
 MODEL_BASE_URL = os.getenv("MODEL_BASE_URL", "https://openrouter.ai/api/v1")
 
 
@@ -23,8 +23,8 @@ class TopicRequest(BaseModel):
 # --- Gemini Setup ---
 llm = ChatOpenAI(
     api_key=DEEPSEEK_API_KEY,
-    model="deepseek/deepseek-chat-v3.1:free",
-    base_url="https://openrouter.ai/api/v1"
+    model=DEEPSEEK_MODEL_NAME,
+    base_url=MODEL_BASE_URL
 )
 
 
@@ -46,7 +46,6 @@ def search_serper(topic: str):
         })
     return results
 
-# --- Helper: Summarize & Rank ---
 import json
 import re
 
@@ -81,7 +80,7 @@ def summarize_and_rank(results, topic):
     try:
         data = json.loads(json_text)
     except Exception as e:
-        print("⚠️ Error parsing JSON:", e)
+        print("Error parsing JSON:", e)
         # fallback: generate basic summaries manually
         data = [
             {
@@ -97,9 +96,11 @@ def summarize_and_rank(results, topic):
     # Sort and trim
     data = sorted(data, key=lambda x: x.get("relevance", 0), reverse=True)
     return data[:5]
-# --- Route ---
-@app.post("/search")
-def search_topic(req: TopicRequest):
-    results = search_serper(req.topic)
-    ranked = summarize_and_rank(results, req.topic)
-    return {"topic": req.topic, "results": ranked}
+
+
+# main execution function
+def search_topic(topic):
+    results = search_serper(topic)
+    ranked = summarize_and_rank(results, topic)
+
+    return {"topic": topic, "results": ranked}

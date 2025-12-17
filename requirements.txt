@@ -4,6 +4,7 @@ uvicorn
 requests
 python-dotenv
 pydantic
+streamlit
 
 # LangChain + OpenAI
 langchain
