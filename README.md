@@ -18,10 +18,10 @@ pip install -r requirements.txt
 ## Run
 ### Backend
 ```bash
-uvicorn ai_agent:app 
+py -m uvicorn ai_agent:app 
 ```
 
 ## Frontend
 ```bash
-streamlit run ai_agent.py
+py -m streamlit run frontend.py
 ```
