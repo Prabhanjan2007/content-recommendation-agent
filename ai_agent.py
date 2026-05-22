@@ -8,13 +8,14 @@ import streamlit as st
 
 
 
-# app = FastAPI()
-
+app = FastAPI()
+print("AI Agent initialized with Gemini and Serper")
 
 SERPER_API_KEY = st.secrets["SERPER_API_KEY"]
 DEEPSEEK_API_KEY = st.secrets["DEEPSEEK_API_KEY"]
 DEEPSEEK_MODEL_NAME = st.secrets["DEEPSEEK_MODEL_NAME"]
 MODEL_BASE_URL = st.secrets["MODEL_BASE_URL"]
+OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
 
 # --- Models ---
 class TopicRequest(BaseModel):
@@ -22,13 +23,8 @@ class TopicRequest(BaseModel):
 
 # --- Gemini Setup ---
 llm = ChatOpenAI(
-    api_key=DEEPSEEK_API_KEY,
-    model=DEEPSEEK_MODEL_NAME,
-    base_url=MODEL_BASE_URL,
-    default_headers={
-        "HTTP-Referer": "https://streamlit.io",
-        "X-Title": "Content Research Agent"
-    }
+    api_key = OPENAI_API_KEY,
+    model = "gpt-3.5-turbo"
 )
 
 
@@ -105,7 +101,17 @@ def summarize_and_rank(results, topic):
 # main execution function
 def search_topic(topic):
     results = search_serper(topic)
-    ranked = summarize_and_rank(results, topic)
+
+    ranked = [
+        {
+            "title": item.get("title", ""),
+            "summary": item.get("snippet", ""),
+            "relevance": 5,
+            "sentiment": 0,
+            "link": item.get("link", "")
+        }
+        for item in results
+    ]
 
     return {"topic": topic, "results": ranked}
 
