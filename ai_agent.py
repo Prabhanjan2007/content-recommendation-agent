@@ -11,9 +11,6 @@ import streamlit as st
 app = FastAPI()
 
 SERPER_API_KEY = st.secrets["SERPER_API_KEY"]
-DEEPSEEK_API_KEY = st.secrets["DEEPSEEK_API_KEY"]
-DEEPSEEK_MODEL_NAME = st.secrets["DEEPSEEK_MODEL_NAME"]
-MODEL_BASE_URL = st.secrets["MODEL_BASE_URL"]
 OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
 
 # --- Models ---
