@@ -9,7 +9,6 @@ import streamlit as st
 
 
 app = FastAPI()
-print("AI Agent initialized with Gemini and Serper")
 
 SERPER_API_KEY = st.secrets["SERPER_API_KEY"]
 DEEPSEEK_API_KEY = st.secrets["DEEPSEEK_API_KEY"]
